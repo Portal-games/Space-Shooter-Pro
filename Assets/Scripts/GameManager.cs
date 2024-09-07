@@ -19,4 +19,3 @@ public class GameManager : MonoBehaviour
         _isGameOver = true;
     }
 }
-//HI
