@@ -1,16 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor.UI;
 using UnityEngine.UI;
-using UnityEditor.SearchService;
 using UnityEngine.SceneManagement;
 
 public class UiManager : MonoBehaviour
 {
     //handle to text
-    [SerializeField] private Text _scoreText;
-    [SerializeField] private Image _livesImg;
+    [SerializeField] private UiManager.Text _scoreText;
+    [SerializeField] Image _livesImg;
     [SerializeField] private Sprite [] _liveSprite;
     [SerializeField] private Text _gameOverText;
     [SerializeField] private Text _restartText;
