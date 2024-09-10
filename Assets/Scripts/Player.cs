@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,8 +9,7 @@ public class Player : MonoBehaviour
     private float _speed = 3.5f;
     [SerializeField]
     private GameObject _laserPrefab; 
-     [SerializeField] private GameObject _sheildOnPlayer;
-
+    [SerializeField] private GameObject _sheildOnPlayer;
 
     [SerializeField]
     private float _firerate = 0.5f;
@@ -23,33 +21,30 @@ public class Player : MonoBehaviour
     private UiManager _uiManager;
     
     private bool _trippleShotActive = false;
-#pragma warning disable IDE0052 // Remove unread private members
     private bool _speedBoostActive = false;
-#pragma warning restore IDE0052 // Remove unread private members
     private bool _sheildsActive = false;
-
 
     [SerializeField]
     private GameObject _trippleShotPrefab;
     private int _speedMultiplier = 2;
-    [SerializeField] private int _score ;
+    [SerializeField] private int _score;
 
     // Start is called before the first frame update
     void Start()
     { 
         transform.position = new Vector3(0, 0, 0);
-        _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
-        _uiManager = GameObject.Find("Canvas").GetComponent<UiManager>();
+        _spawnManager = GameObject.Find("Spawn_Manager")?.GetComponent<SpawnManager>();
+        _uiManager = GameObject.Find("Canvas")?.GetComponent<UiManager>();
 
         if (_spawnManager == null)
         {
             Debug.LogError("SpawnManager is NULL");
         }
 
-        if (_uiManager == null){
+        if (_uiManager == null)
+        {
             Debug.LogError("UiManager is NULL");
         }
-        
     }
 
     // Update is called once per frame
@@ -61,7 +56,6 @@ public class Player : MonoBehaviour
         {
             FireLaser(); 
         }
-
     }
 
     void CalculateMovement()
@@ -69,11 +63,8 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        Vector3 direction = new Vector3(horizontalInput, verticalInput,0);
-
-           transform.Translate(_speed * Time.deltaTime * direction);
-        
-        
+        Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
+        transform.Translate(_speed * Time.deltaTime * direction);
 
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.8f, 0), 0);
 
@@ -91,10 +82,9 @@ public class Player : MonoBehaviour
     {
         _canfire = Time.time + _firerate;
 
-        if (_trippleShotActive == true )
+        if (_trippleShotActive)
         {
-            
-            Instantiate(_trippleShotPrefab, transform.position + new Vector3(-0.53f, -0f, 0), Quaternion.identity);
+            Instantiate(_trippleShotPrefab, transform.position + new Vector3(-0.53f, 0, 0), Quaternion.identity);
         }
         else
         {
@@ -104,42 +94,31 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
-        //if sheild is active
-        //do nothing
-        //deactivate sheilds
-        if (_sheildsActive == true)
+        if (_sheildsActive)
         {
             _sheildsActive = false;
-            //disable sheild on player
-            _sheildOnPlayer.SetActive (false);
+            _sheildOnPlayer.SetActive(false);
             return;
         }
         
-        
-           _lives --;
-        
+        _lives--;
         _uiManager.UpdateLives(_lives);
-        
-        
 
         if (_lives < 1)
         {
             _spawnManager.OnPlayerDeath();
             _uiManager.GameOverText();
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 
     public void TrippleShotActive()
     {
         _trippleShotActive = true;
-        StartCoroutine(TrippleShotPowerDownRoutien());
-    
+        StartCoroutine(TrippleShotPowerDownRoutine());
     }
 
-
-
-    IEnumerator TrippleShotPowerDownRoutien()
+    IEnumerator TrippleShotPowerDownRoutine()
     {
         yield return new WaitForSeconds(5f);
         _trippleShotActive = false;
@@ -149,25 +128,25 @@ public class Player : MonoBehaviour
     {
         _speedBoostActive = true;
         _speed *= _speedMultiplier;
-        StartCoroutine(SpeedBoostPowerDownRuotien());
+        StartCoroutine(SpeedBoostPowerDownRoutine());
     }
 
-    IEnumerator SpeedBoostPowerDownRuotien()
+    IEnumerator SpeedBoostPowerDownRoutine()
     {
         yield return new WaitForSeconds(5f);
         _speedBoostActive = false;
         _speed /= _speedMultiplier;
     }
 
-    public void SheildActive(){
-      _sheildsActive = true;
-      _sheildOnPlayer.SetActive(true);
-      //enable the shield on player
+    public void SheildActive()
+    {
+        _sheildsActive = true;
+        _sheildOnPlayer.SetActive(true);
     } 
-    //method to add 10 to the score
-    public void AddScore(int points){
-        _score += 10;
+
+    public void AddScore(int points)
+    {
+        _score += points;
         _uiManager.UpdateScore(_score);
     }
-    //comuiciate with the uimanager to add 10 to the score
-} 
+}
