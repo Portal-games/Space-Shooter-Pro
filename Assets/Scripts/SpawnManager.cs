@@ -12,11 +12,7 @@ public class SpawnManager : MonoBehaviour
 
     private bool _stopSpawing = false;
 
-   
-
-    // Start is called before the first frame update
-    void Start()
-    {
+    public void StartSpawning() {
         StartCoroutine(SpawnEnemyRoutine());
         StartCoroutine(SpawnPowerupRoutien());
     }
