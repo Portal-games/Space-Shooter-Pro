@@ -20,6 +20,7 @@ public class SpawnManager : MonoBehaviour
     // Coroutine to spawn game objects every 5 seconds
     IEnumerator SpawnEnemyRoutine()
     {
+        yield return new WaitForSeconds(3.0f);
         while (_stopSpawing == false)
         {
             Vector3 EnemyPosToSpawn = new(Random.Range(-8f, 8f), 7, 0);
