@@ -28,6 +28,9 @@ public class Player : MonoBehaviour
     private GameObject _trippleShotPrefab;
     private int _speedMultiplier = 2;
     [SerializeField] private int _score;
+    //player hurt
+    [SerializeField] private GameObject _rightEngine;
+    [SerializeField] private GameObject _leftEngine;
 
     // Start is called before the first frame update
     void Start()
@@ -101,8 +104,23 @@ public class Player : MonoBehaviour
             return;
         }
         
+
         _lives--;
         _uiManager.UpdateLives(_lives);
+
+        //if lives = 2
+        //enable right engine
+        //else if lives = 1
+        //enable left engine
+
+        if (_lives == 2)
+        {
+            _rightEngine.SetActive(true);
+        }
+        else if (_lives == 1)
+        {
+            _leftEngine.SetActive(true);
+        }
 
         if (_lives < 1)
         {
