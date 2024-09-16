@@ -13,8 +13,7 @@ public class Powerup : MonoBehaviour
     //2 = shield
     [SerializeField]
     private int powerupID;
-
-    // Update is called once per frame
+   [SerializeField]private AudioClip _clip;
     void Update()
     {
         transform.Translate(_speed * Time.deltaTime * Vector3.down);
@@ -31,6 +30,9 @@ public class Powerup : MonoBehaviour
         if (other.tag == "Player")
         {
             Player player = other.transform.GetComponent<Player>();
+            AudioSource.PlayClipAtPoint(_clip,transform.position);
+            
+
             if (player != null)
             {
                 switch (powerupID)
