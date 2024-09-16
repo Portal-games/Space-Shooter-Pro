@@ -5,75 +5,87 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
-    private float _speed = 4;
+    private float _speed = 4f;
+    [SerializeField]
+    private float lowerYBound = -5f;
+    [SerializeField]
+    private float respawnHeight = 8f;
+    [SerializeField]
+    private float respawnXRange = 9.0f;
+
     private Player _player;
     private Animator _anim;
     private float _animSeconds = 2.8f;
-    //handle to animator componot
+    private AudioSource _audioSource;
+    private bool _isDestroyed = false; // New flag to track if enemy is destroyed
 
-
-    // Start is called before the first frame update
     void Start()
     {
-        _player = GameObject.Find("Player").GetComponent<Player>(); 
+        _player = GameObject.Find("Player").GetComponent<Player>();
+        _audioSource = gameObject.GetComponent<AudioSource>();
 
-        if (_player == null){
-            //null check the player
-            Debug.LogError("PLAYER IS NULL, Look Likes us devs have to fix it... 💀");
+        if (_player == null)
+        {
+            Debug.LogError("PLAYER IS NULL, Looks like we need to fix it...");
         }
-        _anim = GetComponent<Animator>();   
 
-        if (_anim == null){ 
-            Debug.LogError("Anim is null");
+        _anim = GetComponent<Animator>();
+        if (_anim == null)
+        {
+            Debug.LogError("Animator component is missing on the enemy object.");
         }
-        //assign the component to anim
+
+        if (_audioSource == null)
+        {
+            Debug.LogError("AudioSource is missing on the enemy object.");
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
-        transform.Translate(_speed * Time.deltaTime * Vector3.down);
-
-        if (transform.position.y < -5f)
+        if (!_isDestroyed) // Only move the enemy if it's not destroyed
         {
-            transform.position = new Vector3(Random.Range(-9.0f,9.0f), 8, 0);
-        }  
+            transform.Translate(_speed * Time.deltaTime * Vector3.down);
+
+            if (transform.position.y < lowerYBound)
+            {
+                transform.position = new Vector3(Random.Range(-respawnXRange, respawnXRange), respawnHeight, 0);
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        
+        if (_isDestroyed) return; // Prevent further interactions after the enemy is destroyed
+
         if (other.tag == "Player")
         {
-            
             Player player = other.transform.GetComponent<Player>();
-
             if (player != null)
             {
                 player.Damage();
             }
-            //trigger anim
-            _anim.SetTrigger("OnEnemyDeath");
-            _speed = 0;
-            Destroy(this.gameObject, _animSeconds);
+            HandleDestruction();
         }
 
-       
         if (other.tag == "Laser")
         {
             Destroy(other.gameObject);
-            if(_player != null){
-                _player.AddScore(10);
+            if (_player != null)
+            {
+                _player.AddScore(10); // Only add score if not already destroyed
             }
-
-            _anim.SetTrigger("OnEnemyDeath");
-            _speed = 0;
-            Destroy(this.gameObject, _animSeconds);
+            HandleDestruction();
         }
-
-
     }
 
-
+    // Helper method to handle enemy destruction
+    private void HandleDestruction()
+    {
+        _isDestroyed = true; // Set the destroyed flag
+        _anim.SetTrigger("OnEnemyDeath"); // Play death animation
+        _speed = 0; // Stop enemy movement
+        _audioSource.Play(); // Play destruction sound
+        Destroy(this.gameObject, _animSeconds); // Destroy the enemy after animation ends
+    }
 }
