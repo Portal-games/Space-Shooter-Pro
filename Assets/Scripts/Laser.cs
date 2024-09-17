@@ -7,22 +7,27 @@ public class Laser : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 8.0f;
+    private bool _isEnemyLaser = false;
 
     void Update()
     {
-        // Move the laser upwards every frame
-        transform.Translate(_speed * Time.deltaTime * Vector3.up);
+        Move();
+    }
 
-        // If the laser moves off-screen, destroy it
-        if (transform.position.y > 8)
+    void Move()
+    {
+        if (_isEnemyLaser)
         {
-            // Check if the laser has a parent (e.g., part of a triple shot)
-            if (transform.parent != null)
-            {
-                Destroy(transform.parent.gameObject); // Destroy the parent object
-            }
-
-            Destroy(gameObject); // Destroy the laser itself
+            transform.Translate(Vector3.down * _speed * Time.deltaTime); // Move downward for enemy
         }
+        else
+        {
+            transform.Translate(Vector3.up * _speed * Time.deltaTime); // Move upward for player
+        }
+    }
+
+    public void AssignEnemy()
+    {
+        _isEnemyLaser = true;
     }
 }

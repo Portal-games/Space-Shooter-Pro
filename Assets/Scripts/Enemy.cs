@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -18,6 +19,10 @@ public class Enemy : MonoBehaviour
     private float _animSeconds = 2.8f;
     private AudioSource _audioSource;
     private bool _isDestroyed = false; // New flag to track if enemy is destroyed
+
+    [SerializeReference] private GameObject _laserPrefab;
+    private float _firerate = 3.0f;
+    private float _canfire = -1;
 
     void Start()
     {
@@ -43,7 +48,22 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (!_isDestroyed) // Only move the enemy if it's not destroyed
+      CalculateMovement();
+
+      if (Time.time > _canfire)
+      {
+        //_firerate = Random.Range(3.0f, 7.0f);
+        //_canfire = Time.time + _firerate;
+        //GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+        //Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+        //lasers[0].AssignEnemy();
+        //lasers[1].AssignEnemy();
+      }
+    }
+
+    void CalculateMovement()
+    {
+          if (!_isDestroyed) // Only move the enemy if it's not destroyed
         {
             transform.Translate(_speed * Time.deltaTime * Vector3.down);
 
@@ -53,7 +73,6 @@ public class Enemy : MonoBehaviour
             }
         }
     }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (_isDestroyed) return; // Prevent further interactions after the enemy is destroyed

@@ -50,6 +50,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 4
+  lowerYBound: -5
+  respawnHeight: 8
+  respawnXRange: 9
+  _laserPrefab: {fileID: 3936179669099925387, guid: 1a85f379a0f784e8e98e337719c5aa3b, type: 3}
 --- !u!212 &8591371301487834829
 SpriteRenderer:
   m_ObjectHideFlags: 0

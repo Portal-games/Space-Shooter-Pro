@@ -9,8 +9,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool _isGameOver = false;
 
     private void Update(){
-        if (Input.GetKeyDown(KeyCode.R) && _isGameOver == true) {
+        if (Input.GetKeyDown(KeyCode.R) && _isGameOver == true) 
+        {
             SceneManager.LoadScene(1);
+        }
+
+        //if escape key is pressed
+        //quit application
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
         }
     }
 
