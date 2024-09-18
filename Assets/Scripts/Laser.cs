@@ -11,23 +11,70 @@ public class Laser : MonoBehaviour
 
     void Update()
     {
-        Move();
-    }
-
-    void Move()
-    {
-        if (_isEnemyLaser)
+        if (_isEnemyLaser == false)
         {
-            transform.Translate(Vector3.down * _speed * Time.deltaTime); // Move downward for enemy
+            MoveUp();
         }
         else
         {
-            transform.Translate(Vector3.up * _speed * Time.deltaTime); // Move upward for player
+            MoveDown();
         }
     }
 
-    public void AssignEnemy()
+    void MoveUp() 
+    {
+        // Move the laser upwards every frame
+        transform.Translate(_speed * Time.deltaTime * Vector3.up);
+
+        // If the laser moves off-screen, destroy it
+        if (transform.position.y > 8)
+        {
+            // Check if the laser has a parent (e.g., part of a triple shot)
+            if (transform.parent != null)
+            {
+                Destroy(transform.parent.gameObject); // Destroy the parent object
+            }
+
+            Destroy(gameObject); // Destroy the laser itself
+        }
+    }
+
+
+    void MoveDown() 
+    {
+        // Move the laser upwards every frame
+        transform.Translate(_speed * Time.deltaTime * Vector3.down);
+
+        // If the laser moves off-screen, destroy it
+        if (transform.position.y < -8)
+        {
+            // Check if the laser has a parent (e.g., part of a triple shot)
+            if (transform.parent != null)
+            {
+                Destroy(transform.parent.gameObject); // Destroy the parent object
+            }
+
+            Destroy(gameObject); // Destroy the laser itself
+        }
+    }
+    public void AssignEnemyLaser()
     {
         _isEnemyLaser = true;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) 
+    {
+        if (other.tag == "Player" && _isEnemyLaser == true) 
+        {
+            Player player = other.GetComponent<Player>();
+            if (player != null)
+            {
+                player.Damage();
+            }
+            else 
+            {
+                Debug.LogError("The player is NULL");
+            }
+        }
     }
 }

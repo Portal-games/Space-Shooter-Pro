@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
@@ -20,9 +19,10 @@ public class Enemy : MonoBehaviour
     private AudioSource _audioSource;
     private bool _isDestroyed = false; // New flag to track if enemy is destroyed
 
-    [SerializeReference] private GameObject _laserPrefab;
-    private float _firerate = 3.0f;
-    private float _canfire = -1;
+    [SerializeField]
+    private GameObject _laserPrefab;
+    private float _firerate = 3f;
+    private float _canfire = -1f;
 
     void Start()
     {
@@ -48,31 +48,37 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-      CalculateMovement();
+        CalculateMovement();
 
-      if (Time.time > _canfire)
-      {
-        //_firerate = Random.Range(3.0f, 7.0f);
-        //_canfire = Time.time + _firerate;
-        //GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
-        //Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-        //lasers[0].AssignEnemy();
-        //lasers[1].AssignEnemy();
-      }
+        if (Time.time > _canfire)
+        {
+            // Correct way to use Random.Range
+            _firerate = UnityEngine.Random.Range(3f, 7f);
+            _canfire = Time.time + _firerate;
+            GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity); // Quaternion.identity for no rotation
+            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+            lasers[0].AssignEnemyLaser();
+
+            for(int i = 0; i < lasers.Length; i ++)
+            {
+                lasers[i].AssignEnemyLaser();
+            }
+        }
     }
 
     void CalculateMovement()
     {
-          if (!_isDestroyed) // Only move the enemy if it's not destroyed
+        if (!_isDestroyed) // Only move the enemy if it's not destroyed
         {
             transform.Translate(_speed * Time.deltaTime * Vector3.down);
 
             if (transform.position.y < lowerYBound)
             {
-                transform.position = new Vector3(Random.Range(-respawnXRange, respawnXRange), respawnHeight, 0);
+                transform.position = new Vector3(UnityEngine.Random.Range(-respawnXRange, respawnXRange), respawnHeight, 0);
             }
         }
     }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (_isDestroyed) return; // Prevent further interactions after the enemy is destroyed
