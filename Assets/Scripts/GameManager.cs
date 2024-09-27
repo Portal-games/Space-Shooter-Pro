@@ -11,7 +11,16 @@ public class GameManager : MonoBehaviour
     private void Update(){
         if (Input.GetKeyDown(KeyCode.R) && _isGameOver == true) 
         {
-            SceneManager.LoadScene(1);
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            
+            if (currentSceneIndex == 1)
+            {
+                SceneManager.LoadScene(1);
+            }
+            else if (currentSceneIndex == 2)
+            {
+                SceneManager.LoadScene(2);
+            }
         }
 
         //if escape key is pressed

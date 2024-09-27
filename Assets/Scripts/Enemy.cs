@@ -1,7 +1,9 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
@@ -17,7 +19,7 @@ public class Enemy : MonoBehaviour
     private Animator _anim;
     private float _animSeconds = 2.8f;
     private AudioSource _audioSource;
-    private bool _isDestroyed = false; // New flag to track if enemy is destroyed
+    private bool _isDestroyed = false; // Flag to track if the enemy is destroyed
 
     [SerializeField]
     private GameObject _laserPrefab;
@@ -26,66 +28,90 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
+        
+        // Attempt to find and initialize the Player component
+   /* _player = GameObject.Find("Player")?.GetComponent<Player>();
+    if (_player == null)
+    {
+        Debug.LogError("Player GameObject is not found or Player component is missing.");
+    }*/
+
+    // Attempt to get the AudioSource component
+    _audioSource = GetComponent<AudioSource>();
+    if (_audioSource == null)
+    {
+        Debug.LogError("AudioSource component is missing on the Enemy.");
+    }
+
+    // Attempt to get the Animator component
+    _anim = GetComponent<Animator>();
+    if (_anim == null)
+    {
+        Debug.LogError("Animator component is missing on the Enemy.");
+    }
+
         _player = GameObject.Find("Player").GetComponent<Player>();
-        _audioSource = gameObject.GetComponent<AudioSource>();
+        _audioSource = GetComponent<AudioSource>();
 
         if (_player == null)
         {
-            Debug.LogError("PLAYER IS NULL, Looks like we need to fix it...");
+            Debug.LogError("Player component is missing.");
         }
 
         _anim = GetComponent<Animator>();
         if (_anim == null)
         {
-            Debug.LogError("Animator component is missing on the enemy object.");
+            Debug.LogError("Animator component is missing.");
         }
 
         if (_audioSource == null)
         {
-            Debug.LogError("AudioSource is missing on the enemy object.");
+            Debug.LogError("AudioSource component is missing.");
         }
     }
 
     void Update()
     {
-        CalculateMovement();
-
-        if (Time.time > _canfire)
+        // Only move and fire lasers if the enemy is not destroyed
+        if (!_isDestroyed)
         {
-            // Correct way to use Random.Range
-            _firerate = UnityEngine.Random.Range(3f, 7f);
-            _canfire = Time.time + _firerate;
-            GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity); // Quaternion.identity for no rotation
-            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-            lasers[0].AssignEnemyLaser();
+            CalculateMovement();
 
-            for(int i = 0; i < lasers.Length; i ++)
+            if (Time.time > _canfire)
             {
-                lasers[i].AssignEnemyLaser();
+                _firerate = Random.Range(3f, 7f);
+                _canfire = Time.time + _firerate;
+
+                GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity); // No rotation
+                Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+
+                // Assign the laser to be an enemy laser
+                foreach (Laser laser in lasers)
+                {
+                    laser.AssignEnemyLaser();
+                }
             }
         }
     }
 
     void CalculateMovement()
     {
-        if (!_isDestroyed) // Only move the enemy if it's not destroyed
-        {
-            transform.Translate(_speed * Time.deltaTime * Vector3.down);
+        transform.Translate(_speed * Time.deltaTime * Vector3.down);
 
-            if (transform.position.y < lowerYBound)
-            {
-                transform.position = new Vector3(UnityEngine.Random.Range(-respawnXRange, respawnXRange), respawnHeight, 0);
-            }
+        if (transform.position.y < lowerYBound)
+        {
+            // Respawn at random X within bounds and at a fixed height
+            transform.position = new Vector3(Random.Range(-respawnXRange, respawnXRange), respawnHeight, 0);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (_isDestroyed) return; // Prevent further interactions after the enemy is destroyed
+        if (_isDestroyed) return; // Prevent further interactions if already destroyed
 
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
         {
-            Player player = other.transform.GetComponent<Player>();
+            Player player = other.GetComponent<Player>();
             if (player != null)
             {
                 player.Damage();
@@ -93,24 +119,26 @@ public class Enemy : MonoBehaviour
             HandleDestruction();
         }
 
-        if (other.tag == "Laser")
+        if (other.CompareTag("Laser"))
         {
             Destroy(other.gameObject);
+
             if (_player != null)
             {
-                _player.AddScore(10); // Only add score if not already destroyed
+                _player.AddScore(10);
             }
             HandleDestruction();
         }
     }
 
-    // Helper method to handle enemy destruction
+    // Handle destruction of the enemy
     private void HandleDestruction()
     {
-        _isDestroyed = true; // Set the destroyed flag
-        _anim.SetTrigger("OnEnemyDeath"); // Play death animation
-        _speed = 0; // Stop enemy movement
+        _isDestroyed = true; // Mark as destroyed
+        _anim.SetTrigger("OnEnemyDeath"); // Play destruction animation
+        _speed = 0; // Stop movement
         _audioSource.Play(); // Play destruction sound
-        Destroy(this.gameObject, _animSeconds); // Destroy the enemy after animation ends
+        Destroy(gameObject, _animSeconds); // Destroy object after animation plays
     }
 }
+

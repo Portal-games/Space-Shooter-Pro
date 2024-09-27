@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System.Diagnostics;
 
 public class Player : MonoBehaviour
 {
+    private int currentSceneIndex;
     [SerializeField]
     private float _speed = 3.5f;
     [SerializeField]
@@ -21,6 +24,7 @@ public class Player : MonoBehaviour
     private UiManager _uiManager;
     
     private bool _trippleShotActive = false;
+    [SerializeField ]
     private bool _speedBoostActive = false;
     private bool _sheildsActive = false;
 
@@ -33,29 +37,43 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _leftEngine;
     //var to store audio clip
     [SerializeField] private AudioClip _laserSound;
+
+    [SerializeField] private int PlayerId;
      private AudioSource _audioSource;
 
     // Start is called before the first frame update
     void Start()
     { 
-        transform.position = new Vector3(0, 0, 0);
+        currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        if (currentSceneIndex == 1)
+        {
+            transform.position = new Vector3(0, 0, 0);
+        }
+        else if (currentSceneIndex == 2)
+        {
+            switch (PlayerId)
+            {
+                case 0: transform.position = new Vector3(-5, 0 ,0 ); break;
+                case 1: transform.position = new Vector3(5, 0, 0) ; break;
+            }
+        }
         _spawnManager = GameObject.Find("Spawn_Manager")?.GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas")?.GetComponent<UiManager>();
         _audioSource = GetComponent<AudioSource>();
 
         if (_spawnManager == null)
         {
-            Debug.LogError("SpawnManager is NULL");
+            UnityEngine.Debug.LogError("SpawnManager is NULL");
         }
 
         if (_uiManager == null)
         {
-            Debug.LogError("UiManager is NULL");
+            UnityEngine.Debug.LogError("UiManager is NULL");
         }
 
         if (_audioSource == null)
         {
-            Debug.LogError("AudioSource on the player is NULLLLLL.");
+            UnityEngine.Debug.LogError("AudioSource on the player is NULLLLLL.");
         }
         else
         {
