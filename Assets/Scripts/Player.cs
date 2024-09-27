@@ -11,24 +11,24 @@ public class Player : MonoBehaviour
     private float _speed = 3.5f;
     [SerializeField]
     private GameObject _laserPrefab; 
-    [SerializeField] private GameObject _sheildOnPlayer;
+    [SerializeField] private GameObject _shieldOnPlayer;
 
     [SerializeField]
     private float _firerate = 0.5f;
-    private float _canfire = -1f;
+    private float _canFire = -1f;
 
     [SerializeField]
     private int _lives = 3;
     private SpawnManager _spawnManager;
     private UiManager _uiManager;
     
-    private bool _trippleShotActive = false;
-    [SerializeField ]
+    private bool _tripleShotActive = false;
+    [SerializeField]
     private bool _speedBoostActive = false;
-    private bool _sheildsActive = false;
+    private bool _shieldsActive = false;
 
     [SerializeField]
-    private GameObject _trippleShotPrefab;
+    private GameObject _tripleShotPrefab;
     private int _speedMultiplier = 2;
     [SerializeField] private int _score;
     //player hurt
@@ -37,12 +37,11 @@ public class Player : MonoBehaviour
     //var to store audio clip
     [SerializeField] private AudioClip _laserSound;
 
-    [SerializeField] private int PlayerId;
-     private AudioSource _audioSource;
+    [SerializeField] private int PlayerId; // 0 for Player 1, 1 for Player 2
+    private AudioSource _audioSource;
 
-    // Start is called before the first frame update
     void Start()
-    { 
+    {
         currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         if (currentSceneIndex == 1)
         {
@@ -52,10 +51,11 @@ public class Player : MonoBehaviour
         {
             switch (PlayerId)
             {
-                case 0: transform.position = new Vector3(-5, 0 ,0 ); break;
-                case 1: transform.position = new Vector3(5, 0, 0) ; break;
+                case 0: transform.position = new Vector3(-5, 0, 0); break;
+                case 1: transform.position = new Vector3(5, 0, 0); break;
             }
         }
+
         _spawnManager = GameObject.Find("Spawn_Manager")?.GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas")?.GetComponent<UiManager>();
         _audioSource = GetComponent<AudioSource>();
@@ -72,7 +72,7 @@ public class Player : MonoBehaviour
 
         if (_audioSource == null)
         {
-            UnityEngine.Debug.LogError("AudioSource on the player is NULLLLLL.");
+            UnityEngine.Debug.LogError("AudioSource on the player is NULL");
         }
         else
         {
@@ -80,25 +80,31 @@ public class Player : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (currentSceneIndex == 1)
+        if (PlayerId == 0)
         {
-            CalculateMovement();
+            CalculateMovement();  // Player 1 movement using WASD
         }
-        else if (currentSceneIndex == 2)
+        else if (PlayerId == 1)
         {
-            Debug.Log("GrasshopperClub Bit Me");
-            CalculateMovement();
+            CalculateCoOpMovement();  // Player 2 movement using IJKL
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canfire)
+        // Allow Player 1 to fire laser using Space
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire && PlayerId == 0)
         {
             FireLaser(); 
         }
+
+        // Allow Player 2 to fire laser using Right Shift
+        if (Input.GetKeyDown(KeyCode.RightShift) && Time.time > _canFire && PlayerId == 1)
+        {
+            FireLaser();
+        }
     }
 
+    // Player 1 movement (WASD)
     void CalculateMovement()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -119,39 +125,59 @@ public class Player : MonoBehaviour
         }
     }
 
+    // Player 2 movement (IJKL)
+    void CalculateCoOpMovement()
+    {
+        float horizontalInput = 0;
+        float verticalInput = 0;
+
+        // Use different keys for Player 2
+        if (Input.GetKey(KeyCode.J)) horizontalInput = -1;
+        if (Input.GetKey(KeyCode.L)) horizontalInput = 1;
+        if (Input.GetKey(KeyCode.I)) verticalInput = 1;
+        if (Input.GetKey(KeyCode.K)) verticalInput = -1;
+
+        Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
+        transform.Translate(_speed * Time.deltaTime * direction);
+
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.8f, 0), 0);
+
+        if (transform.position.x > 11.3f)
+        {
+            transform.position = new Vector3(-11.3f, transform.position.y, 0);
+        }
+        else if (transform.position.x < -11.3f)
+        {
+            transform.position = new Vector3(11.3f, transform.position.y, 0);
+        }
+    }
+
     void FireLaser()
     {
-        _canfire = Time.time + _firerate;
+        _canFire = Time.time + _firerate;
 
-        if (_trippleShotActive)
+        if (_tripleShotActive)
         {
-            Instantiate(_trippleShotPrefab, transform.position + new Vector3(-0.53f, 0, 0), Quaternion.identity);
+            Instantiate(_tripleShotPrefab, transform.position + new Vector3(-0.53f, 0, 0), Quaternion.identity);
         }
         else
         {
             Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
         }
         _audioSource.Play();
-        //play the laser audio clip
     }
 
     public void Damage()
     {
-        if (_sheildsActive)
+        if (_shieldsActive)
         {
-            _sheildsActive = false;
-            _sheildOnPlayer.SetActive(false);
+            _shieldsActive = false;
+            _shieldOnPlayer.SetActive(false);
             return;
         }
-        
 
         _lives--;
         _uiManager.UpdateLives(_lives);
-
-        //if lives = 2
-        //enable right engine
-        //else if lives = 1
-        //enable left engine
 
         if (_lives == 2)
         {
@@ -170,16 +196,16 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void TrippleShotActive()
+    public void TripleShotActive()
     {
-        _trippleShotActive = true;
-        StartCoroutine(TrippleShotPowerDownRoutine());
+        _tripleShotActive = true;
+        StartCoroutine(TripleShotPowerDownRoutine());
     }
 
-    IEnumerator TrippleShotPowerDownRoutine()
+    IEnumerator TripleShotPowerDownRoutine()
     {
         yield return new WaitForSeconds(5f);
-        _trippleShotActive = false;
+        _tripleShotActive = false;
     }
 
     public void SpeedBoostActive()
@@ -196,11 +222,11 @@ public class Player : MonoBehaviour
         _speed /= _speedMultiplier;
     }
 
-    public void SheildActive()
+    public void ShieldActive()
     {
-        _sheildsActive = true;
-        _sheildOnPlayer.SetActive(true);
-    } 
+        _shieldsActive = true;
+        _shieldOnPlayer.SetActive(true);
+    }
 
     public void AddScore(int points)
     {

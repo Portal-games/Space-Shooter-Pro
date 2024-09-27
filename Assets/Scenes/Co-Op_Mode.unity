@@ -518,11 +518,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 5
   _laserPrefab: {fileID: 6981227890217905811, guid: c6f46723ee6bc46f8a243302601f27aa, type: 3}
-  _sheildOnPlayer: {fileID: 235360963}
+  _shieldOnPlayer: {fileID: 235360963}
   _firerate: 0.15
   _lives: 3
   _speedBoostActive: 0
-  _trippleShotPrefab: {fileID: 3575650718167926864, guid: 27b8c93570d01441da61867cc0f3718c, type: 3}
+  _tripleShotPrefab: {fileID: 3575650718167926864, guid: 27b8c93570d01441da61867cc0f3718c, type: 3}
   _score: 0
   _rightEngine: {fileID: 740122122}
   _leftEngine: {fileID: 1994282964}
@@ -1671,11 +1671,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 5
   _laserPrefab: {fileID: 6981227890217905811, guid: c6f46723ee6bc46f8a243302601f27aa, type: 3}
-  _sheildOnPlayer: {fileID: 685794172}
+  _shieldOnPlayer: {fileID: 685794172}
   _firerate: 0.15
   _lives: 3
   _speedBoostActive: 0
-  _trippleShotPrefab: {fileID: 3575650718167926864, guid: 27b8c93570d01441da61867cc0f3718c, type: 3}
+  _tripleShotPrefab: {fileID: 3575650718167926864, guid: 27b8c93570d01441da61867cc0f3718c, type: 3}
   _score: 0
   _rightEngine: {fileID: 206735890}
   _leftEngine: {fileID: 586940032}
@@ -2399,7 +2399,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -63.5365, y: -123.57504}
+  m_AnchoredPosition: {x: -707.46, y: -89}
   m_SizeDelta: {x: 127.075, y: 147.15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1891800685

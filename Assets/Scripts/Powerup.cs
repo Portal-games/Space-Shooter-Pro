@@ -38,13 +38,13 @@ public class Powerup : MonoBehaviour
                 switch (powerupID)
                 {
                     case 0:
-                        player.TrippleShotActive();
+                        player.TripleShotActive();
                         break;
                     case 1:
                         player.SpeedBoostActive();                      
                         break;
                     case 2:
-                        player.SheildActive();
+                        player.ShieldActive();
                         break;
                     default:
                         Debug.Log("Defualt Value");
