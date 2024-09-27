@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Diagnostics;
 
 public class Player : MonoBehaviour
 {
@@ -84,7 +83,15 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CalculateMovement();
+        if (currentSceneIndex == 1)
+        {
+            CalculateMovement();
+        }
+        else if (currentSceneIndex == 2)
+        {
+            Debug.Log("GrasshopperClub Bit Me");
+            CalculateMovement();
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canfire)
         {
